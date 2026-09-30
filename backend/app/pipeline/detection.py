@@ -105,7 +105,7 @@ def detect(bundle: ForecastBundle, pre: Preprocessed, thr: float | None = None) 
             if n_cells < settings.min_object_cells:
                 continue
             iy, ix = np.nonzero(cells)
-            w = s_mean[ti][cells] - thr + 1e-3
+            w = (s_mean[ti][cells] - thr + 1e-3) ** 2   # emphasise the core
             lat_c = float(np.average(grid.LAT[cells], weights=w))
             lon_c = float(np.average(grid.LON[cells], weights=w))
             pk = int(np.argmax(s_mean[ti][cells]))

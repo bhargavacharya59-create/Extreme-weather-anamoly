@@ -1,0 +1,7 @@
+# Optional: reading real ERA5 / IMDAA / NCUM / NEPS / IMD files
+xarray>=2024.1
+netCDF4>=1.6
+cfgrib>=0.9
+cdsapi>=0.7        # Copernicus Climate Data Store client (ERA5 download)
+imdlib>=0.1.19     # IMD gridded rainfall / temperature
+xgboost>=2.0       # optional faster classifier (auto-used if installed)

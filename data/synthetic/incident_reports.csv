@@ -1,0 +1,121 @@
+report_id,date,city,type,summary,assigned_officer,response_min,status,data_source
+INC-0000,2025-08-05,Bengaluru,waterlogging,"Underpass waterlogged, traffic diverted",Officer A. (fictional),118,closed,synthetic_demo
+INC-0001,2025-07-24,Puri,heat_illness,Heat exhaustion cases at bus stand,Officer B. (fictional),135,closed,synthetic_demo
+INC-0002,2025-09-24,Patna,waterlogging,"Underpass waterlogged, traffic diverted",Officer C. (fictional),66,closed,synthetic_demo
+INC-0003,2025-09-07,Mysuru,heat_illness,Heat exhaustion cases at bus stand,Officer D. (fictional),163,closed,synthetic_demo
+INC-0004,2025-09-15,Jaipur,heat_illness,Heat exhaustion cases at bus stand,Officer E. (fictional),57,pending,synthetic_demo
+INC-0005,2025-10-21,Bengaluru,heat_illness,Heat exhaustion cases at bus stand,Officer F. (fictional),73,closed,synthetic_demo
+INC-0006,2025-08-16,Delhi,heat_illness,Heat exhaustion cases at bus stand,Officer G. (fictional),145,closed,synthetic_demo
+INC-0007,2025-10-06,Bengaluru,waterlogging,"Underpass waterlogged, traffic diverted",Officer H. (fictional),25,closed,synthetic_demo
+INC-0008,2025-10-15,Hyderabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer I. (fictional),12,closed,synthetic_demo
+INC-0009,2025-10-09,Visakhapatnam,waterlogging,"Underpass waterlogged, traffic diverted",Officer J. (fictional),15,closed,synthetic_demo
+INC-0010,2025-06-21,Nagpur,waterlogging,"Underpass waterlogged, traffic diverted",Officer K. (fictional),177,closed,synthetic_demo
+INC-0011,2025-08-02,Mumbai,heat_illness,Heat exhaustion cases at bus stand,Officer L. (fictional),104,closed,synthetic_demo
+INC-0012,2025-10-21,Guwahati,waterlogging,"Underpass waterlogged, traffic diverted",Officer M. (fictional),177,pending,synthetic_demo
+INC-0013,2025-07-25,Guwahati,heat_illness,Heat exhaustion cases at bus stand,Officer N. (fictional),133,pending,synthetic_demo
+INC-0014,2025-08-04,Hyderabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer O. (fictional),81,pending,synthetic_demo
+INC-0015,2025-07-10,Guwahati,heat_illness,Heat exhaustion cases at bus stand,Officer P. (fictional),165,pending,synthetic_demo
+INC-0016,2025-06-20,Hyderabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer Q. (fictional),45,closed,synthetic_demo
+INC-0017,2025-07-16,Chennai,tree_fall,Tree fall blocking road,Officer R. (fictional),132,pending,synthetic_demo
+INC-0018,2025-06-15,Kochi,tree_fall,Tree fall blocking road,Officer S. (fictional),74,closed,synthetic_demo
+INC-0019,2025-07-12,Bhubaneswar,power_outage,Feeder outage after heavy rain,Officer T. (fictional),62,pending,synthetic_demo
+INC-0020,2025-08-19,Bhubaneswar,tree_fall,Tree fall blocking road,Officer U. (fictional),28,pending,synthetic_demo
+INC-0021,2025-08-08,Chennai,waterlogging,"Underpass waterlogged, traffic diverted",Officer V. (fictional),19,pending,synthetic_demo
+INC-0022,2025-07-21,Bengaluru,tree_fall,Tree fall blocking road,Officer W. (fictional),106,closed,synthetic_demo
+INC-0023,2025-06-27,Kolkata,power_outage,Feeder outage after heavy rain,Officer X. (fictional),125,pending,synthetic_demo
+INC-0024,2025-06-09,Pune,tree_fall,Tree fall blocking road,Officer Y. (fictional),164,pending,synthetic_demo
+INC-0025,2025-09-05,Kochi,waterlogging,"Underpass waterlogged, traffic diverted",Officer Z. (fictional),81,pending,synthetic_demo
+INC-0026,2025-10-14,Bhubaneswar,power_outage,Feeder outage after heavy rain,Officer A. (fictional),100,closed,synthetic_demo
+INC-0027,2025-08-24,Guwahati,waterlogging,"Underpass waterlogged, traffic diverted",Officer B. (fictional),143,closed,synthetic_demo
+INC-0028,2025-09-10,Bengaluru,tree_fall,Tree fall blocking road,Officer C. (fictional),24,pending,synthetic_demo
+INC-0029,2025-07-08,Bengaluru,power_outage,Feeder outage after heavy rain,Officer D. (fictional),170,closed,synthetic_demo
+INC-0030,2025-07-10,Kolkata,heat_illness,Heat exhaustion cases at bus stand,Officer E. (fictional),150,closed,synthetic_demo
+INC-0031,2025-07-08,Chennai,tree_fall,Tree fall blocking road,Officer F. (fictional),165,closed,synthetic_demo
+INC-0032,2025-07-28,Bhubaneswar,tree_fall,Tree fall blocking road,Officer G. (fictional),69,closed,synthetic_demo
+INC-0033,2025-06-17,Bengaluru,tree_fall,Tree fall blocking road,Officer H. (fictional),49,closed,synthetic_demo
+INC-0034,2025-09-17,Nagpur,tree_fall,Tree fall blocking road,Officer I. (fictional),71,pending,synthetic_demo
+INC-0035,2025-08-23,Guwahati,waterlogging,"Underpass waterlogged, traffic diverted",Officer J. (fictional),168,closed,synthetic_demo
+INC-0036,2025-09-02,Mysuru,waterlogging,"Underpass waterlogged, traffic diverted",Officer K. (fictional),135,pending,synthetic_demo
+INC-0037,2025-10-05,Puri,tree_fall,Tree fall blocking road,Officer L. (fictional),32,pending,synthetic_demo
+INC-0038,2025-10-22,Hyderabad,power_outage,Feeder outage after heavy rain,Officer M. (fictional),23,pending,synthetic_demo
+INC-0039,2025-06-26,Nagpur,tree_fall,Tree fall blocking road,Officer N. (fictional),86,pending,synthetic_demo
+INC-0040,2025-06-08,Jaipur,waterlogging,"Underpass waterlogged, traffic diverted",Officer O. (fictional),34,closed,synthetic_demo
+INC-0041,2025-09-21,Pune,power_outage,Feeder outage after heavy rain,Officer P. (fictional),146,closed,synthetic_demo
+INC-0042,2025-10-10,Mumbai,power_outage,Feeder outage after heavy rain,Officer Q. (fictional),138,closed,synthetic_demo
+INC-0043,2025-08-24,Bengaluru,heat_illness,Heat exhaustion cases at bus stand,Officer R. (fictional),122,closed,synthetic_demo
+INC-0044,2025-07-28,Puri,tree_fall,Tree fall blocking road,Officer S. (fictional),154,closed,synthetic_demo
+INC-0045,2025-10-06,Kolkata,waterlogging,"Underpass waterlogged, traffic diverted",Officer T. (fictional),156,pending,synthetic_demo
+INC-0046,2025-08-22,Hyderabad,heat_illness,Heat exhaustion cases at bus stand,Officer U. (fictional),136,closed,synthetic_demo
+INC-0047,2025-08-14,Kolkata,waterlogging,"Underpass waterlogged, traffic diverted",Officer V. (fictional),74,closed,synthetic_demo
+INC-0048,2025-06-22,Bhubaneswar,waterlogging,"Underpass waterlogged, traffic diverted",Officer W. (fictional),114,closed,synthetic_demo
+INC-0049,2025-08-14,Pune,power_outage,Feeder outage after heavy rain,Officer X. (fictional),174,closed,synthetic_demo
+INC-0050,2025-10-01,Pune,power_outage,Feeder outage after heavy rain,Officer Y. (fictional),95,pending,synthetic_demo
+INC-0051,2025-10-05,Delhi,power_outage,Feeder outage after heavy rain,Officer Z. (fictional),167,closed,synthetic_demo
+INC-0052,2025-06-07,Pune,power_outage,Feeder outage after heavy rain,Officer A. (fictional),62,closed,synthetic_demo
+INC-0053,2025-07-05,Patna,tree_fall,Tree fall blocking road,Officer B. (fictional),169,closed,synthetic_demo
+INC-0054,2025-08-11,Kochi,tree_fall,Tree fall blocking road,Officer C. (fictional),55,closed,synthetic_demo
+INC-0055,2025-08-06,Pune,tree_fall,Tree fall blocking road,Officer D. (fictional),14,closed,synthetic_demo
+INC-0056,2025-08-09,Kolkata,power_outage,Feeder outage after heavy rain,Officer E. (fictional),23,closed,synthetic_demo
+INC-0057,2025-06-12,Patna,tree_fall,Tree fall blocking road,Officer F. (fictional),55,pending,synthetic_demo
+INC-0058,2025-06-08,Hyderabad,tree_fall,Tree fall blocking road,Officer G. (fictional),32,closed,synthetic_demo
+INC-0059,2025-09-14,Puri,tree_fall,Tree fall blocking road,Officer H. (fictional),91,closed,synthetic_demo
+INC-0060,2025-06-21,Nagpur,power_outage,Feeder outage after heavy rain,Officer I. (fictional),140,closed,synthetic_demo
+INC-0061,2025-10-08,Visakhapatnam,tree_fall,Tree fall blocking road,Officer J. (fictional),141,pending,synthetic_demo
+INC-0062,2025-06-26,Delhi,heat_illness,Heat exhaustion cases at bus stand,Officer K. (fictional),110,pending,synthetic_demo
+INC-0063,2025-10-10,Hyderabad,power_outage,Feeder outage after heavy rain,Officer L. (fictional),66,closed,synthetic_demo
+INC-0064,2025-08-21,Puri,power_outage,Feeder outage after heavy rain,Officer M. (fictional),63,closed,synthetic_demo
+INC-0065,2025-10-25,Kolkata,power_outage,Feeder outage after heavy rain,Officer N. (fictional),92,pending,synthetic_demo
+INC-0066,2025-06-17,Bengaluru,power_outage,Feeder outage after heavy rain,Officer O. (fictional),31,closed,synthetic_demo
+INC-0067,2025-07-17,Jaipur,waterlogging,"Underpass waterlogged, traffic diverted",Officer P. (fictional),86,closed,synthetic_demo
+INC-0068,2025-10-25,Mysuru,heat_illness,Heat exhaustion cases at bus stand,Officer Q. (fictional),79,pending,synthetic_demo
+INC-0069,2025-06-24,Hyderabad,tree_fall,Tree fall blocking road,Officer R. (fictional),169,closed,synthetic_demo
+INC-0070,2025-08-14,Hyderabad,heat_illness,Heat exhaustion cases at bus stand,Officer S. (fictional),152,closed,synthetic_demo
+INC-0071,2025-07-16,Kolkata,tree_fall,Tree fall blocking road,Officer T. (fictional),123,closed,synthetic_demo
+INC-0072,2025-06-20,Kolkata,waterlogging,"Underpass waterlogged, traffic diverted",Officer U. (fictional),63,closed,synthetic_demo
+INC-0073,2025-07-07,Bhubaneswar,tree_fall,Tree fall blocking road,Officer V. (fictional),128,closed,synthetic_demo
+INC-0074,2025-09-01,Bhubaneswar,heat_illness,Heat exhaustion cases at bus stand,Officer W. (fictional),60,closed,synthetic_demo
+INC-0075,2025-10-09,Guwahati,tree_fall,Tree fall blocking road,Officer X. (fictional),32,pending,synthetic_demo
+INC-0076,2025-09-10,Mumbai,heat_illness,Heat exhaustion cases at bus stand,Officer Y. (fictional),131,closed,synthetic_demo
+INC-0077,2025-09-16,Nagpur,heat_illness,Heat exhaustion cases at bus stand,Officer Z. (fictional),146,closed,synthetic_demo
+INC-0078,2025-06-13,Ahmedabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer A. (fictional),17,closed,synthetic_demo
+INC-0079,2025-09-01,Guwahati,power_outage,Feeder outage after heavy rain,Officer B. (fictional),25,pending,synthetic_demo
+INC-0080,2025-10-17,Jaipur,heat_illness,Heat exhaustion cases at bus stand,Officer C. (fictional),167,closed,synthetic_demo
+INC-0081,2025-09-17,Lucknow,tree_fall,Tree fall blocking road,Officer D. (fictional),100,pending,synthetic_demo
+INC-0082,2025-06-03,Ahmedabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer E. (fictional),131,closed,synthetic_demo
+INC-0083,2025-10-22,Jaipur,waterlogging,"Underpass waterlogged, traffic diverted",Officer F. (fictional),94,closed,synthetic_demo
+INC-0084,2025-06-26,Bhubaneswar,waterlogging,"Underpass waterlogged, traffic diverted",Officer G. (fictional),130,pending,synthetic_demo
+INC-0085,2025-07-20,Mumbai,tree_fall,Tree fall blocking road,Officer H. (fictional),95,pending,synthetic_demo
+INC-0086,2025-09-03,Chennai,power_outage,Feeder outage after heavy rain,Officer I. (fictional),58,closed,synthetic_demo
+INC-0087,2025-10-05,Kochi,waterlogging,"Underpass waterlogged, traffic diverted",Officer J. (fictional),110,closed,synthetic_demo
+INC-0088,2025-07-17,Hyderabad,waterlogging,"Underpass waterlogged, traffic diverted",Officer K. (fictional),128,closed,synthetic_demo
+INC-0089,2025-09-18,Bengaluru,waterlogging,"Underpass waterlogged, traffic diverted",Officer L. (fictional),163,closed,synthetic_demo
+INC-0090,2025-09-28,Nagpur,heat_illness,Heat exhaustion cases at bus stand,Officer M. (fictional),64,pending,synthetic_demo
+INC-0091,2025-08-07,Visakhapatnam,waterlogging,"Underpass waterlogged, traffic diverted",Officer N. (fictional),158,closed,synthetic_demo
+INC-0092,2025-07-23,Guwahati,waterlogging,"Underpass waterlogged, traffic diverted",Officer O. (fictional),106,closed,synthetic_demo
+INC-0093,2025-08-18,Patna,tree_fall,Tree fall blocking road,Officer P. (fictional),115,pending,synthetic_demo
+INC-0094,2025-06-11,Bhubaneswar,heat_illness,Heat exhaustion cases at bus stand,Officer Q. (fictional),12,closed,synthetic_demo
+INC-0095,2025-07-05,Hyderabad,heat_illness,Heat exhaustion cases at bus stand,Officer R. (fictional),58,closed,synthetic_demo
+INC-0096,2025-09-24,Visakhapatnam,waterlogging,"Underpass waterlogged, traffic diverted",Officer S. (fictional),115,pending,synthetic_demo
+INC-0097,2025-06-27,Mumbai,heat_illness,Heat exhaustion cases at bus stand,Officer T. (fictional),16,closed,synthetic_demo
+INC-0098,2025-06-09,Kolkata,power_outage,Feeder outage after heavy rain,Officer U. (fictional),78,pending,synthetic_demo
+INC-0099,2025-07-04,Chennai,tree_fall,Tree fall blocking road,Officer V. (fictional),34,closed,synthetic_demo
+INC-0100,2025-08-24,Ahmedabad,tree_fall,Tree fall blocking road,Officer W. (fictional),38,closed,synthetic_demo
+INC-0101,2025-10-09,Delhi,tree_fall,Tree fall blocking road,Officer X. (fictional),135,closed,synthetic_demo
+INC-0102,2025-09-06,Lucknow,waterlogging,"Underpass waterlogged, traffic diverted",Officer Y. (fictional),151,closed,synthetic_demo
+INC-0103,2025-08-19,Mumbai,power_outage,Feeder outage after heavy rain,Officer Z. (fictional),66,closed,synthetic_demo
+INC-0104,2025-06-15,Mysuru,power_outage,Feeder outage after heavy rain,Officer A. (fictional),171,closed,synthetic_demo
+INC-0105,2025-09-01,Mumbai,waterlogging,"Underpass waterlogged, traffic diverted",Officer B. (fictional),178,pending,synthetic_demo
+INC-0106,2025-10-03,Mumbai,power_outage,Feeder outage after heavy rain,Officer C. (fictional),62,closed,synthetic_demo
+INC-0107,2025-06-16,Lucknow,heat_illness,Heat exhaustion cases at bus stand,Officer D. (fictional),135,closed,synthetic_demo
+INC-0108,2025-08-22,Puri,tree_fall,Tree fall blocking road,Officer E. (fictional),59,pending,synthetic_demo
+INC-0109,2025-08-01,Guwahati,heat_illness,Heat exhaustion cases at bus stand,Officer F. (fictional),161,pending,synthetic_demo
+INC-0110,2025-06-17,Pune,tree_fall,Tree fall blocking road,Officer G. (fictional),170,closed,synthetic_demo
+INC-0111,2025-08-03,Lucknow,tree_fall,Tree fall blocking road,Officer H. (fictional),30,closed,synthetic_demo
+INC-0112,2025-09-22,Kolkata,heat_illness,Heat exhaustion cases at bus stand,Officer I. (fictional),151,closed,synthetic_demo
+INC-0113,2025-07-10,Guwahati,waterlogging,"Underpass waterlogged, traffic diverted",Officer J. (fictional),56,closed,synthetic_demo
+INC-0114,2025-07-20,Hyderabad,tree_fall,Tree fall blocking road,Officer K. (fictional),140,closed,synthetic_demo
+INC-0115,2025-07-02,Delhi,heat_illness,Heat exhaustion cases at bus stand,Officer L. (fictional),147,pending,synthetic_demo
+INC-0116,2025-09-17,Delhi,waterlogging,"Underpass waterlogged, traffic diverted",Officer M. (fictional),87,pending,synthetic_demo
+INC-0117,2025-10-03,Kolkata,heat_illness,Heat exhaustion cases at bus stand,Officer N. (fictional),85,closed,synthetic_demo
+INC-0118,2025-06-04,Bengaluru,power_outage,Feeder outage after heavy rain,Officer O. (fictional),61,pending,synthetic_demo
+INC-0119,2025-10-08,Bengaluru,waterlogging,"Underpass waterlogged, traffic diverted",Officer P. (fictional),68,pending,synthetic_demo

@@ -27,3 +27,10 @@ CITIES = [
 ]
 
 CITY_BY_NAME = {c[0]: c for c in CITIES}
+
+CITY_CODE = {
+    "Bengaluru": "BLR", "Mumbai": "MUM", "Delhi": "DEL", "Chennai": "CHN", "Kolkata": "KOL",
+    "Hyderabad": "HYD", "Bhubaneswar": "BBS", "Puri": "PUR", "Visakhapatnam": "VTZ", "Guwahati": "GUW",
+    "Ahmedabad": "AMD", "Jaipur": "JAI", "Kochi": "COK", "Mysuru": "MYS", "Pune": "PNQ",
+    "Lucknow": "LKO", "Patna": "PAT", "Nagpur": "NAG",
+}

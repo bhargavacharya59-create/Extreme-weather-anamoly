@@ -1,0 +1,34 @@
+# secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+*.pem
+*service-account*.json
+.cdsapirc
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# node / next
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/next-env.d.ts
+*.tsbuildinfo
+
+# data: regenerable or large (reference/ and small synthetic files ARE committed)
+data/raw/
+data/processed/
+data/models/
+data/*.db
+data/synthetic/forecast_ensemble.npz
+
+# os / editors
+.DS_Store
+.idea/
+.vscode/

@@ -8,6 +8,14 @@ from pathlib import Path
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 REPO_DIR = BACKEND_DIR.parent
 
+# Load backend/.env (GEMINI_API_KEY etc.) before settings are read.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(BACKEND_DIR / ".env")
+except ImportError:  # python-dotenv is optional
+    pass
+
 
 def _env_bool(name: str, default: bool) -> bool:
     val = os.getenv(name)

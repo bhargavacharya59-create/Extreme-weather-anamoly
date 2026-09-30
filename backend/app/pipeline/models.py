@@ -14,8 +14,8 @@ from pathlib import Path
 import joblib
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor, HistGradientBoostingClassifier, IsolationForest
-from sklearn.metrics import accuracy_score, classification_report, f1_score
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, f1_score, precision_score, recall_score
+from sklearn.model_selection import GroupShuffleSplit
 
 from app.config import settings
 from app.data.synthetic import Grid, generate_forecast, climatology, random_events
@@ -128,9 +128,12 @@ class ModelBundle:
         self.trained_at: str | None = None
 
     # ---- training
-    def fit(self, X, y_type, y_sev, verbose=True):
-        Xtr, Xte, yt_tr, yt_te, ys_tr, ys_te = train_test_split(
-            X, y_type, y_sev, test_size=0.25, random_state=0, stratify=y_type if len(set(y_type)) > 1 else None)
+    def fit(self, X, y_type, y_sev, groups=None, verbose=True):
+        # Event-based hold-out: whole simulated scenarios go to test, so near-duplicate
+        # objects from the same weather situation never sit on both sides of the split.
+        groups = np.arange(len(X)) if groups is None else np.asarray(groups)
+        tr, te = next(GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=0).split(X, y_type, groups))
+        Xtr, Xte, yt_tr, yt_te, ys_tr, ys_te = X[tr], X[te], y_type[tr], y_type[te], y_sev[tr], y_sev[te]
         self.type_clf = _make_classifier(len(TYPE_CLASSES)).fit(Xtr, yt_tr)
         real = yt_tr > 0
         self.sev_clf = _make_classifier(len(SEV_CLASSES)).fit(Xtr[real], ys_tr[real])
@@ -147,6 +150,11 @@ class ModelBundle:
             "type_macro_f1": round(float(f1_score(yt_te, pt, average="macro")), 4),
             "rule_baseline_accuracy": round(float(accuracy_score(yt_te, rule)), 4),
             "severity_accuracy": round(float(accuracy_score(ys_te[yt_te > 0], ps)), 4),
+            # detection view: event (any type) vs noise
+            "detection_precision": round(float(precision_score(yt_te > 0, pt > 0)), 4),
+            "detection_recall": round(float(recall_score(yt_te > 0, pt > 0)), 4),
+            "false_alarm_rate": round(float(((pt > 0) & (yt_te == 0)).sum() / max((yt_te == 0).sum(), 1)), 4),
+            "split": "event-based hold-out (25% of simulated scenarios)",
             "type_report": classification_report(yt_te, pt, labels=list(range(len(TYPE_CLASSES))),
                                                  target_names=TYPE_CLASSES, output_dict=True, zero_division=0),
             "backend": "xgboost" if XGBClassifier is not None else "sklearn-hgb",
@@ -224,19 +232,26 @@ class ModelBundle:
         path = Path(path or settings.model_dir / "weatherpulse_models.joblib")
         mb = cls()
         if path.exists():
-            mb.__dict__.update(joblib.load(path))
+            try:
+                mb.__dict__.update(joblib.load(path))
+            except Exception as e:  # e.g. saved with a different scikit-learn version
+                import logging
+                logging.getLogger("weatherpulse.models").warning("Could not load %s (%s); retrain needed", path, e)
+                mb = cls()
         return mb
 
 
 def train_all(n_scenarios: int = 24, extra_X=None, extra_yt=None, extra_ys=None, verbose=True) -> ModelBundle:
     if verbose:
         print("Building labelled synthetic hindcasts ...")
-    X, yt, ys, _ = build_training_set(n_scenarios=n_scenarios, verbose=verbose)
+    X, yt, ys, meta = build_training_set(n_scenarios=n_scenarios, verbose=verbose)
+    groups = np.array([m["scenario"] for m in meta])
     if extra_X is not None and len(extra_X):
         X = np.vstack([X, extra_X])
         yt = np.concatenate([yt, extra_yt])
         ys = np.concatenate([ys, extra_ys])
-    mb = ModelBundle().fit(X, yt, ys, verbose=verbose)
+        groups = np.concatenate([groups, np.full(len(extra_X), 10_000)])  # field feedback = own group
+    mb = ModelBundle().fit(X, yt, ys, groups=groups, verbose=verbose)
     Xt, Yt = build_trajectory_set()
     mb.fit_trajectory(Xt, Yt)
     return mb

@@ -27,7 +27,7 @@ import numpy as np
 from scipy.ndimage import gaussian_filter
 
 from app.config import settings
-from app.data.cities import CITIES
+from app.data.cities import CITIES, CITY_CODE
 from app.geo import destination, haversine_km, to_local_km
 
 VARIABLES = ("precip", "t2m", "wind", "mslp")
@@ -161,16 +161,23 @@ class EventSpec:
         return asdict(self)
 
 
+def _aimed(eid, etype, target_lat, target_lon, heading, speed, start_h, duration_h, peak_z, radius, name):
+    """Event whose centre passes over (target_lat, target_lon) at peak intensity."""
+    peak_h = start_h + duration_h / 2
+    lat0, lon0 = destination(target_lat, target_lon, (heading + 180) % 360, speed * (peak_h - start_h))
+    return EventSpec(eid, etype, round(lat0, 4), round(lon0, 4), speed, heading, start_h, duration_h, peak_z, radius, name)
+
+
 def demo_scenario() -> list[EventSpec]:
-    """Hand-placed events that pass over populated places (matches the pitch deck:
-    a heavy-rain cell approaching Bengaluru, a Bay-of-Bengal cyclone, etc.)."""
+    """Hand-placed events that peak over populated places (matches the pitch deck:
+    a heavy-rain cell over Bengaluru, a Bay-of-Bengal cyclone landfall, etc.)."""
     return [
-        EventSpec("EV-BLR", "heavy_rainfall", 12.55, 78.55, 12, 290, 18, 108, 7.0, 45, "Bengaluru cloudburst cell"),
-        EventSpec("EV-BOB", "cyclone", 13.4, 88.6, 12, 318, 6, 168, 7.5, 120, "Bay of Bengal cyclonic storm"),
-        EventSpec("EV-MUM", "heavy_rainfall", 18.7, 71.4, 9, 70, 12, 78, 6.5, 55, "Konkan coast extreme rain"),
-        EventSpec("EV-RAJ", "heatwave", 27.2, 73.2, 5, 85, 60, 156, 6.0, 200, "Rajasthan-Delhi heatwave"),
-        EventSpec("EV-CHN", "heavy_rainfall", 12.6, 81.4, 10, 300, 114, 90, 7.5, 55, "North Tamil Nadu coastal rain"),
-        EventSpec("EV-GUW", "heavy_rainfall", 25.3, 92.7, 8, 315, 150, 84, 7.5, 65, "Assam-Meghalaya heavy rain"),
+        _aimed("EV-BLR", "heavy_rainfall", 12.96, 77.56, 285, 11, 30, 84, 7.8, 45, "Bengaluru extreme rainfall cell"),
+        _aimed("EV-BOB", "cyclone", 19.81, 85.83, 320, 13, 6, 144, 7.5, 110, "Bay of Bengal cyclonic storm"),
+        _aimed("EV-MUM", "heavy_rainfall", 19.07, 72.90, 75, 10, 12, 72, 6.8, 45, "Konkan coast extreme rainfall"),
+        _aimed("EV-RAJ", "heatwave", 27.90, 76.20, 60, 4, 60, 150, 6.0, 190, "Rajasthan-Delhi heatwave"),
+        _aimed("EV-CHN", "heavy_rainfall", 13.08, 80.25, 280, 9, 108, 84, 7.8, 55, "North Tamil Nadu coastal rainfall"),
+        _aimed("EV-GUW", "heavy_rainfall", 26.14, 91.74, 300, 8, 150, 78, 7.5, 60, "Assam-Meghalaya heavy rainfall"),
     ]
 
 
@@ -317,7 +324,7 @@ def generate_assets(seed: int = 7) -> list[dict]:
     rng = np.random.default_rng(seed)
     assets = []
     for name, state, clat, clon, pop, sig in CITIES:
-        code = name[:3].upper()
+        code = CITY_CODE.get(name, name[:3].upper())
         n_school = int(0.012 * math.sqrt(pop))
         n_hosp = int(0.006 * math.sqrt(pop))
         n_rescue = max(3, int(0.0015 * math.sqrt(pop)))
