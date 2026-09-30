@@ -51,6 +51,9 @@ class Settings:
     gemini_api_key: str | None = field(default_factory=lambda: os.getenv("GEMINI_API_KEY") or None)
     gemini_model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
     use_gemini: bool = field(default_factory=lambda: _env_bool("WP_USE_GEMINI", True))
+    # Also use Gemini for the drafts/summaries the pipeline writes automatically on every run
+    # (~50 calls). Off by default so the free tier is kept for the Copilot and manual drafts.
+    gemini_in_pipeline: bool = field(default_factory=lambda: _env_bool("WP_GEMINI_IN_PIPELINE", False))
 
     # Alert channels. "log" writes to the outbox table; twilio/smtp need credentials.
     sms_provider: str = field(default_factory=lambda: os.getenv("WP_SMS_PROVIDER", "log"))

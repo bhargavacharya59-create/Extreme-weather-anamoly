@@ -69,6 +69,8 @@ python -m scripts.prepare_reference_data
 
 ### Optional
 * **Gemini key** → AI-written alerts, translations and a conversational Copilot. Get one at https://aistudio.google.com/apikey and put it in `backend/.env` (never in the frontend, never in Git).
+  * Gemini is used **on demand only** (Copilot questions, "Draft alert", translations). The automatic drafts written on every pipeline run use verified templates, so startup doesn't burn your free quota. Set `WP_GEMINI_IN_PIPELINE=1` to let Gemini write those too.
+  * **`Gemini HTTP 429` / "quota exceeded"** = the free-tier limit is used up. The app keeps working (templates + offline Copilot) and pauses Gemini automatically until the limit resets. Options: wait (per-minute limits reset in a minute, daily ones at midnight Pacific time), use `GEMINI_MODEL=gemini-2.5-flash-lite` (higher free limits), enable billing on the key, or set `WP_USE_GEMINI=0` to turn Gemini off.
 * `python -m scripts.train_models` — retrain the models (also available from Settings → Retrain).
 * `python -m scripts.generate_synthetic_data` — export the synthetic datasets to `data/synthetic/`.
 * `python -m scripts.export_accounts` — write every demo login to `data/demo_accounts.xlsx`.

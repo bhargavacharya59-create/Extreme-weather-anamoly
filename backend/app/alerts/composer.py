@@ -142,11 +142,11 @@ def _numbers_ok(text: str, f: dict) -> bool:
     return True
 
 
-def draft(event: dict, role: str, language: str = "en", point: dict | None = None) -> dict:
+def draft(event: dict, role: str, language: str = "en", point: dict | None = None, use_ai: bool = True) -> dict:
     f = facts_for(event, role, point)
     title, body = template(f, role)
     source = "template"
-    if gemini.enabled():
+    if use_ai and gemini.available():
         lang = {"en": "English", "kn": "Kannada", "hi": "Hindi", "ta": "Tamil", "te": "Telugu", "mr": "Marathi", "or": "Odia", "bn": "Bengali"}.get(language, "English")
         prompt = (
             f"Write a short, calm, actionable weather alert in {lang} for {f['audience']}.\n"
@@ -162,13 +162,13 @@ def draft(event: dict, role: str, language: str = "en", point: dict | None = Non
     return {"title": title, "body": body, "language": language, "generated_by": source, "facts": f}
 
 
-def situation_summary(event: dict) -> dict:
+def situation_summary(event: dict, use_ai: bool = True) -> dict:
     f = facts_for(event, "official")
     text = (f"{f['event']} anomaly forecast near {f['place']}, {f['window_start']} to {f['window_end']}, moving "
             f"{f['direction']} at about {f['speed_kmh']} km/h. Around {_fmt_int(f['people_total'])} residents, "
             f"{f['schools']} schools/colleges and {f['hospitals']} hospitals lie within 8 km of the peak.")
     source = "template"
-    if gemini.enabled():
+    if use_ai and gemini.available():
         prompt = ("Write a 2-3 sentence situation summary for a district emergency officer. Use only these facts, "
                   f"no other numbers, plain language:\n{f}")
         out = gemini.text_of(gemini.generate([{"role": "user", "parts": [{"text": prompt}]}]))

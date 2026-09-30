@@ -60,7 +60,7 @@ export default function CopilotPage() {
     setBusy(true);
     try {
       const r = await api('/copilot/ask', { method: 'POST', body: { question, history } });
-      setMsgs((m) => [...m, { role: 'assistant', text: r.answer, calls: r.tool_calls, mode: r.mode }]);
+      setMsgs((m) => [...m, { role: 'assistant', text: r.answer, calls: r.tool_calls, mode: r.mode, note: r.note }]);
       setMapState(r.map);
     } catch (e) {
       setMsgs((m) => [...m, { role: 'assistant', text: `Sorry, I could not answer: ${e.message}`, calls: [] }]);
@@ -98,7 +98,7 @@ export default function CopilotPage() {
             <div key={i} className="col gap-8" style={{ maxWidth: '92%' }}>
               {m.calls?.length > 0 && <div className="col gap-4">{m.calls.map((c, j) => <ToolCall key={j} c={c} />)}</div>}
               <div className="bubble-ai">{m.text}</div>
-              {m.mode && <div className="tiny muted">{m.mode === 'gemini' ? 'Gemini, grounded on tool results' : 'Composed from tool results (add GEMINI_API_KEY for natural-language answers)'} · logged for audit</div>}
+              {m.mode && <div className="tiny muted">{m.mode === 'gemini' ? 'Gemini, grounded on tool results' : (m.note || 'Composed from tool results (add GEMINI_API_KEY for natural-language answers)')} · logged for audit</div>}
             </div>
           ))}
           {busy && <div className="row gap-8 small muted"><Icon name="refresh" size={15} className="spin" />Looking up data and the map…</div>}

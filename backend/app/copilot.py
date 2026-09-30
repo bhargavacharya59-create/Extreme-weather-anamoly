@@ -233,11 +233,17 @@ class Copilot:
 
     def ask(self, question: str, history: list | None = None) -> dict:
         calls: list = []
-        if gemini.enabled():
+        if gemini.available():
             out = self._ask_gemini(question, history or [], calls)
             if out:
                 return self._finish(out, calls, "gemini")
-        return self._finish(self._ask_offline(question, calls), calls, "offline-tools")
+            calls.clear()   # Gemini failed part-way: answer cleanly from the offline router instead
+        res = self._finish(self._ask_offline(question, calls), calls, "offline-tools")
+        st = gemini.status()
+        if st["paused_for_s"]:
+            res["note"] = (f"Gemini quota reached - answered with offline tools. "
+                           f"AI answers resume in about {max(1, round(st['paused_for_s'] / 60))} min.")
+        return res
 
     def _finish(self, text, calls, mode):
         m = {k: list(dict.fromkeys(v if k != "points" else [tuple(x) for x in v])) for k, v in self.map.items()}

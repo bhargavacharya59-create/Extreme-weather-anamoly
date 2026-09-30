@@ -214,7 +214,7 @@ class Pipeline:
             "data_source": "synthetic_demo", "official_warning": False,
             "status": "active",
         }
-        ev["summary"] = composer.situation_summary(ev)
+        ev["summary"] = composer.situation_summary(ev, use_ai=settings.gemini_in_pipeline)
         return ev
 
     def _attach_vehicles(self, events, seed):
@@ -259,8 +259,9 @@ class Pipeline:
                 "vehicles_tracked": sum(e.get("vehicles", {}).get("tracked", 0) for e in events)}
 
     # ------------------------------------------------------------ alerts
-    def draft_alert(self, ev: dict, role: str, language: str = "en", created_by: str = "system") -> dict:
-        d = composer.draft(ev, role, language)
+    def draft_alert(self, ev: dict, role: str, language: str = "en", created_by: str = "system",
+                    use_ai: bool = True) -> dict:
+        d = composer.draft(ev, role, language, use_ai=use_ai)
         imp_ = ev["peak"]["impact"]
         recipients = {
             "official": 1,
@@ -298,7 +299,7 @@ class Pipeline:
                     continue
                 if role == "citizen" and ev["peak"]["impact"]["population"]["total"] <= 0:
                     continue   # over open sea: nobody to warn
-                self.draft_alert(ev, role)
+                self.draft_alert(ev, role, use_ai=settings.gemini_in_pipeline)
 
     def recipients_for(self, alert: dict) -> list[dict]:
         ev = self.event(alert["event_id"])

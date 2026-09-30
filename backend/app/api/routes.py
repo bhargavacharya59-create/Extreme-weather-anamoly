@@ -818,6 +818,7 @@ def settings_status(user: dict = Depends(OFFICIAL)):
         "model": {"version": p.state["run"]["model_version"], "trained_at": p.models.trained_at,
                   "metrics": {k: v for k, v in p.models.metrics.items() if k != "type_report"}},
         "integrations": {"gemini": gemini.enabled(), "gemini_model": settings.gemini_model if gemini.enabled() else None,
+                         "gemini_status": gemini.status(), "gemini_in_pipeline": settings.gemini_in_pipeline,
                          "sms": settings.sms_provider, "email": settings.email_provider},
         "users": _user_summary(),
     }
