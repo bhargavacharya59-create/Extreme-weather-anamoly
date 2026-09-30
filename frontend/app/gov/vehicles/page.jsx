@@ -53,9 +53,8 @@ export default function VehiclesPage() {
         <div className="grow">
           <MapView zones={zones.data} vehicles={vfc.data} height={560} fit="data" fitKey={`veh-${selected}`}
             focus={sel ? { lon: sel.lon, lat: sel.lat, zoom: 12 } : ev ? { lon: ev.peak.lon, lat: ev.peak.lat, zoom: 9.6 } : undefined}
-            markers={sel ? [{ lon: sel.lon, lat: sel.lat, label: sel.id, tone: 'vehicle' }] : []} show={{ tracks: false }}>
-            <div className="map-overlay" style={{ left: 12, top: 12 }}><div className="maptag">{ev?.place || 'All zones'} · {ev?.peak.valid_local}</div></div>
-            <div className="map-overlay" style={{ left: 12, bottom: 12 }}><RiskLegend collapsible={false} extra={[LEGEND.vehicleIn, LEGEND.vehicle]} /></div>
+            markers={sel ? [{ lon: sel.lon, lat: sel.lat, label: sel.id, tone: 'vehicle' }] : []} show={{ tracks: false }}
+            title={`${(ev?.place || 'All zones').split(',')[0]} · Vehicles`} legend={[LEGEND.vehicleIn, LEGEND.vehicle]}>
           </MapView>
         </div>
         <div style={{ width: 480, flex: '0 0 480px' }} className="col gap-8">

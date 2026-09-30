@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { useGov } from '@/components/gov/Shell';
 import { PageHead, useMapLayers } from '@/components/gov/widgets';
-import MapView, { RiskLegend } from '@/components/map/MapView';
+import MapView, { LEGEND } from '@/components/map/MapView';
 import { RingStack } from '@/components/charts';
 import { Card, DemoBanner, Empty, Kpi, Skeleton } from '@/components/ui';
 import Icon from '@/components/ui/Icon';
@@ -46,11 +46,9 @@ export default function PopulationPage() {
         </Card>
         <div className="col gap-12">
           <MapView zones={layers.zones} tracks={layers.tracks} wards={layers.wards} highlightWards={hl} selectedEvent={selected} onSelectEvent={setSelected}
-            height={360} fit="data" fitKey={`pop-${selected}`} focus={sel ? { lon: sel.peak.lon, lat: sel.peak.lat, zoom: 10 } : undefined} show={{ tracks: false }}>
-            <div className="map-overlay" style={{ left: 12, top: 12 }}><div className="maptag">{sel?.place || 'Select an event'}</div></div>
-            <div className="map-overlay" style={{ left: 12, bottom: 12 }}>
-              <RiskLegend collapsible={false} extra={[{ label: 'Ward density (people / km²)', color: '#3987e5' }, { label: 'Ward inside the zone (outlined)', color: '#184f95', stroke: '#14202b' }]} />
-            </div>
+            height={400} fit="data" fitKey={`pop-${selected}`} compact title={sel ? `${sel.place.split(',')[0]} · Census wards` : 'Census wards'}
+            legend={[{ label: 'Ward density (people / km²)', color: '#3987e5' }, LEGEND.ward]} focus={sel ? { lon: sel.peak.lon, lat: sel.peak.lat, zoom: 10 } : undefined} show={{ tracks: false }}>
+
           </MapView>
           <Card title={`Wards and districts · ${selected || ''}`}>
             {!impact.data ? <Skeleton h={100} /> : impact.data.population.wards?.length ? (

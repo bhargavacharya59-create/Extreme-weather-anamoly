@@ -69,8 +69,14 @@ export async function download(path, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-export async function login(email, password) {
-  const res = await api('/auth/login', { method: 'POST', body: { email, password } });
+export async function login(username, password) {
+  const res = await api('/auth/login', { method: 'POST', body: { username, password } });
+  setSession(res.token, res.user);
+  return res.user;
+}
+
+export async function register(body) {
+  const res = await api('/auth/register', { method: 'POST', body });
   setSession(res.token, res.user);
   return res.user;
 }

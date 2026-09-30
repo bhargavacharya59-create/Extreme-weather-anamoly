@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import MapView, { LEGEND, RiskLegend } from '@/components/map/MapView';
+import MapView, { LEGEND } from '@/components/map/MapView';
 import RoleHeader from '@/components/RoleHeader';
 import { ErrorBox, Skeleton, toast } from '@/components/ui';
 import Icon from '@/components/ui/Icon';
@@ -16,14 +16,14 @@ export default function TravellerApp() {
   const ev = d?.event;
 
   const speak = () => {
-    if (!d?.vehicle || typeof window === 'undefined' || !window.speechSynthesis) return;
+    if (!d?.vehicle || d.clear || typeof window === 'undefined' || !window.speechSynthesis) return;
     const msg = v.status === 'inside'
       ? `Warning. You are inside a ${ev.severity} risk ${TYPE_LABEL[ev.type]} zone. Stop at a safe, raised place.`
       : `Warning. ${TYPE_LABEL[ev.type]} risk zone ahead in about ${v.eta_min} minutes. A safer route adds ${d.routes.extra_min} minutes.`;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
   };
-  useEffect(() => { if (d?.vehicle) { const t = setTimeout(speak, 800); return () => clearTimeout(t); } return undefined; }, [d?.vehicle?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (d?.vehicle && !d.clear) { const t = setTimeout(speak, 800); return () => clearTimeout(t); } return undefined; }, [d?.vehicle?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const zoneFc = d?.zone && { type: 'FeatureCollection', features: ['low', 'moderate', 'high'].map((k) => ({ type: 'Feature', properties: { ring: k, event_id: ev.id, severity: ev.severity }, geometry: { type: 'Polygon', coordinates: [d.zone.rings[k]] } })) };
   const inside = v?.status === 'inside';
@@ -36,8 +36,24 @@ export default function TravellerApp() {
         <div className="m-body">
           <div className="banner small" style={{ background: '#3a2f12', color: '#f5d98c' }}><span className="tag">DEMO</span>Simulated vehicle and synthetic forecast.</div>
           <ErrorBox error={error} onRetry={reload} />
-          {!d ? <><Skeleton h={130} style={{ opacity: 0.2 }} /><Skeleton h={360} style={{ opacity: 0.2 }} /></> : !v ? (
-            <div className="m-card" style={{ background: '#1e2e3d', borderColor: '#33485c', color: '#fff' }}><Icon name="check" /> Your route is clear of all risk zones.</div>
+          {!d ? <><Skeleton h={130} style={{ opacity: 0.2 }} /><Skeleton h={360} style={{ opacity: 0.2 }} /></> : d.clear || !v ? (
+            <div className="col gap-12">
+              <section className="col gap-6" style={{ background: '#15392a', border: '1px solid #2c6b4c', borderRadius: 16, padding: 18 }}>
+                <div className="tiny" style={{ fontWeight: 700, letterSpacing: '0.05em', color: '#7fd1a1' }}>ROUTE CLEAR</div>
+                <div style={{ fontSize: 22, fontWeight: 700 }}>No risk zone on your route</div>
+                <div className="small" style={{ color: '#c9d2da' }}>We check your heading and speed against every forecast risk zone. You will be alerted here if that changes.</div>
+              </section>
+              {v && <div className="m-card" style={{ background: '#1e2e3d', borderColor: '#33485c', color: '#fff' }}>
+                <div className="small" style={{ color: '#9fb0c0' }}>Your vehicle</div>
+                <div className="strong">{v.id} · {KIND_LABEL[v.kind]} · {v.operator}</div>
+                <div className="small" style={{ color: '#9fb0c0', marginTop: 4 }}>Speed {Math.round(v.speed_kmh)} km/h · heading {Math.round(v.heading_deg)}°</div>
+              </div>}
+              {d.nearest && <div className="m-card" style={{ background: '#1e2e3d', borderColor: '#33485c', color: '#fff' }}>
+                <div className="small" style={{ color: '#9fb0c0' }}>Nearest forecast risk zone</div>
+                <div className="strong">{TYPE_LABEL[d.nearest.event.type]} · {d.nearest.event.place}</div>
+                <div className="small" style={{ color: '#9fb0c0', marginTop: 4 }}>{d.nearest.distance_km} km away · {d.nearest.event.window.start_local}</div>
+              </div>}
+            </div>
           ) : (
             <>
               <section role="alert" className="col gap-6" style={{ background: inside ? RISK.high.fill : RISK.moderate.fill, color: inside ? '#fff' : '#14202b', borderRadius: 16, padding: 18 }}>
@@ -51,8 +67,8 @@ export default function TravellerApp() {
               </section>
 
               <MapView zones={zoneFc} routes={d.routes} height={360} fit="data" fitKey={v.id}
-                markers={[{ lon: v.lon, lat: v.lat, label: `${KIND_LABEL[v.kind]} ${v.id.split('-').pop()}`, tone: 'vehicle' }]}>
-                <div className="map-overlay" style={{ left: 10, top: 10 }}><RiskLegend collapsible={false} title="Legend" extra={[LEGEND.current, LEGEND.safer]} /></div>
+                markers={[{ lon: v.lon, lat: v.lat, label: `${KIND_LABEL[v.kind]} ${v.id.split('-').pop()}`, tone: 'vehicle' }]}
+                title="Route check" legend={[LEGEND.current, LEGEND.safer]} compact>
               </MapView>
 
               {choice ? (

@@ -315,8 +315,29 @@ def population_density(lat, lon) -> np.ndarray:
 
 
 _SCHOOL_KINDS = ["Govt. Primary School", "Govt. High School", "Public School", "PU College", "Engineering College", "Degree College"]
-_HOSP_KINDS = ["Primary Health Centre", "Community Health Centre", "District Hospital", "Multispeciality Hospital"]
+_HOSP_KINDS = ["Primary Health Centre", "Community Health Centre", "General Hospital", "Multispeciality Hospital"]
 _RESCUE_KINDS = ["NDRF Team", "SDRF Unit", "Fire & Emergency Station", "Civil Defence Unit"]
+
+
+def _locality(city: str, clat: float, clon: float, lat: float, lon: float) -> str:
+    """Neighbourhood for a point: BBMP ward in Bengaluru, else a sector of the city."""
+    if city == "Bengaluru":
+        try:
+            from app.data.population import get_population
+            pop = get_population()
+            if pop.wards:
+                wi = int(pop._ward_index(np.array([lat]), np.array([lon]))[0])
+                if wi < 0:  # outside BBMP: nearest ward centroid
+                    cents = [np.asarray(w["polys"][0]).mean(axis=0) for w in pop.wards]
+                    d = [float(haversine_km(lat, lon, c[1], c[0])) for c in cents]
+                    wi = int(np.argmin(d))
+                return pop.wards[wi]["ward_name"].replace(" Ward", "").strip()
+        except Exception:
+            pass
+    from app.data.cities import LOCALITIES
+    names = LOCALITIES.get(city) or [f"Zone {i}" for i in range(1, 9)]
+    ang = (math.degrees(math.atan2(lon - clon, lat - clat)) + 360) % 360
+    return names[int(ang / 360 * len(names)) % len(names)]
 
 
 def generate_assets(seed: int = 7) -> list[dict]:
@@ -339,17 +360,26 @@ def generate_assets(seed: int = 7) -> list[dict]:
                 lon = clon + dx / (111.32 * math.cos(math.radians(clat)))
                 label = labels[int(rng.integers(len(labels)))]
                 aid = f"{code}-{kind[:3].upper()}-{i + 1:03d}"
+                loc = _locality(name, clat, clon, lat, lon)
                 cap = (
                     int(rng.integers(200, 3000)) if kind == "school"
                     else int(rng.integers(20, 800)) if kind == "hospital"
                     else int(rng.integers(15, 60))
                 )
                 assets.append({
-                    "id": aid, "kind": kind, "name": f"{label}, {name} Zone {i % 8 + 1}",
+                    "id": aid, "kind": kind, "name": f"{label}, {loc}, {name}", "locality": loc,
                     "city": name, "state": state, "lat": round(float(lat), 5), "lon": round(float(lon), 5),
                     "capacity": cap,
                     "contact": f"{aid.lower()}@example.org",
                 })
+    # make every name unique: second "Govt. High School, Koramangala, Bengaluru" becomes "... School No. 2, ..."
+    seen: dict = {}
+    for a in assets:
+        k = a["name"].lower()
+        seen[k] = seen.get(k, 0) + 1
+        if seen[k] > 1:
+            label, rest = a["name"].split(", ", 1)
+            a["name"] = f"{label} No. {seen[k]}, {rest}"
     return assets
 
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGov } from '@/components/gov/Shell';
-import MapView, { RiskLegend, LEGEND } from '@/components/map/MapView';
+import MapView, { LEGEND } from '@/components/map/MapView';
 import { Card } from '@/components/ui';
 import Icon from '@/components/ui/Icon';
 import { api } from '@/lib/api';
@@ -118,8 +118,8 @@ export default function CopilotPage() {
       <aside className="col gap-16" style={{ flex: '0 0 460px', padding: '22px 24px', position: 'sticky', top: 66 }}>
         <h3>Map result</h3>
         <MapView zones={zFc} assets={aFc} wards={wards.data} highlightWards={mapState.wards} height={380} fit="data" fitKey={JSON.stringify(mapState)} focus={focus}
-          markers={mapState.points.map((p) => ({ lon: p[0], lat: p[1] }))} show={{ tracks: false, vehicles: false }}>
-          <div className="map-overlay" style={{ left: 10, bottom: 10 }}><RiskLegend collapsible={false} title="Risk rings" extra={[LEGEND.hospital, LEGEND.school, { label: 'Census ward counted', color: '#3987e5' }]} /></div>
+          markers={mapState.points.map((p) => ({ lon: p[0], lat: p[1] }))} show={{ tracks: false, vehicles: false }}
+          title={focusEvent ? `${focusEvent.place.split(',')[0]} · Copilot result` : 'Copilot result'} live={false} legend={[LEGEND.hospital, LEGEND.school, LEGEND.ward]} compact>
         </MapView>
         <Card title="What the Copilot can access" footer="It cannot send alerts: drafts go to the approval queue. Every tool call is written to the audit log.">
           <div className="small muted" style={{ marginBottom: 6 }}>Read-only tools, called automatically:</div>

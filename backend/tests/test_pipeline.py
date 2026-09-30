@@ -105,3 +105,18 @@ class AlertTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AccountTests(unittest.TestCase):
+    def test_password_hash_and_determinism(self):
+        from app.accounts import check_password, demo_password, hash_password
+        self.assertEqual(demo_password("X"), demo_password("X"))
+        self.assertNotEqual(demo_password("X"), demo_password("Y"))
+        h = hash_password("Monsoon@1234")
+        self.assertTrue(check_password("Monsoon@1234", h))
+        self.assertFalse(check_password("monsoon@1234", h))
+
+    def test_institution_names_unique(self):
+        from app.data.synthetic import generate_assets
+        names = [a["name"].lower() for a in generate_assets()]
+        self.assertEqual(len(names), len(set(names)))

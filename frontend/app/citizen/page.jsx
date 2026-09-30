@@ -66,7 +66,7 @@ export default function CitizenApp() {
                 </div>
               </section>
 
-              <MapView zones={zoneFc} height={230} fit="data" fitKey={`${d.lat}`} interactive={false}
+              <MapView zones={zoneFc} height={260} fit="data" fitKey={`${d.lat}`} interactive={false} title={d.home_label || d.ward?.ward_name || 'Your area'}
                 markers={[{ lon: d.lon, lat: d.lat, label: t.you }, ...(d.shelter ? [{ lon: d.shelter.lon, lat: d.shelter.lat, label: 'Shelter', tone: 'shelter' }] : [])]} />
 
               <section className="m-card col gap-10">

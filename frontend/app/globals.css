@@ -299,3 +299,14 @@ p { margin: 0; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
 .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .chart-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* map chrome (satellite GIS look) */
+.map-title { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.97); border-radius: 10px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); font-size: 14px; color: var(--ink); align-self: flex-start; }
+.map-title .live { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #c62828; border: 1px solid #f3c1bd; background: #fdecea; border-radius: 999px; padding: 2px 8px; }
+.map-title .livedot { width: 7px; height: 7px; border-radius: 50%; background: #e53935; animation: pulse 1.6s infinite; }
+.map-fab { width: 38px; height: 38px; border-radius: 50%; border: 0; background: #fff; color: var(--ink); display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.28); cursor: pointer; }
+.map-fab:hover { background: #f3f4f5; }
+.mapwrap .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.28); }
+.mapwrap .maplibregl-ctrl-scale { border-color: #333; background: rgba(255,255,255,.85); font-size: 11px; }
+.mapwrap.is-satellite { background: #2b3a2f; border-color: #1f2a22; }
+.legend .li { font-size: 12.5px; }

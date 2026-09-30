@@ -83,7 +83,7 @@ export default function RiskMapPage() {
               </div>
             </div>
             <div className="map-overlay" style={{ left: 12, bottom: 12 }}>
-              <RiskLegend extra={[LEGEND.track, LEGEND.cone, LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn, LEGEND.vehicle]} />
+              <RiskLegend compact extra={[LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn, LEGEND.vehicle, LEGEND.track, LEGEND.cone]} />
             </div>
           </MapView>
         </div>

@@ -45,14 +45,10 @@ export default function Overview() {
           <MapView zones={layers.zones} tracks={layers.tracks} assets={layers.assets} vehicles={layers.vehicles} wards={layers.wards}
             selectedEvent={selected} onSelectEvent={(id) => { setSelected(id); }} height={580} fit="data" fitKey={`${fitKey}-${!!layers.zones}-${leadH}`}
             focus={sel && fitKey > 0 ? { lon: sel.peak.lon, lat: sel.peak.lat, zoom: 10.2 } : undefined}
-            show={{ grid: false }}>
-            <div className="map-overlay" style={{ left: 12, top: 12 }}>
-              <div className="maptag">{sel ? sel.place : 'India · all active anomalies'}</div>
-            </div>
-            <div className="map-overlay" style={{ left: 12, bottom: 12 }}>
-              <RiskLegend extra={[LEGEND.track, LEGEND.cone, LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn]} />
-            </div>
-            <div className="map-overlay row gap-6" style={{ right: 52, top: 12 }}>
+            show={{ grid: false }} compact
+            title={sel && fitKey > 0 ? `${sel.place.split(' (')[0].split(',')[0]} · Risk Zone` : 'India · Active Anomalies'}
+            legend={[LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn, LEGEND.track, LEGEND.cone]}>
+            <div className="map-overlay row gap-6" style={{ left: 12, bottom: 12 }}>
               <button className="btn sm" onClick={() => setFitKey((k) => k + 1)} disabled={!sel || fitKey > 0}><Icon name="target" size={15} />Zoom to selected</button>
               <button className="btn sm" onClick={() => setFitKey(0)} disabled={fitKey === 0}><Icon name="globe" size={15} />All India</button>
             </div>

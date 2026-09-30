@@ -22,6 +22,8 @@ log = logging.getLogger("weatherpulse")
 def _bootstrap():
     """First start: train the models if none are saved (about a minute), then run the pipeline."""
     p = get_pipeline()
+    from app.accounts import get_accounts
+    get_accounts()          # creates the demo login accounts on first start (a few seconds)
     if not p.models.ready:
         log.info("No trained models in %s - training now (first start only, ~1 min)...", settings.model_dir)
         p.status = "training"

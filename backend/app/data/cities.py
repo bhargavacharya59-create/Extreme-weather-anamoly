@@ -34,3 +34,25 @@ CITY_CODE = {
     "Ahmedabad": "AMD", "Jaipur": "JAI", "Kochi": "COK", "Mysuru": "MYS", "Pune": "PNQ",
     "Lucknow": "LKO", "Patna": "PAT", "Nagpur": "NAG",
 }
+
+# Neighbourhoods used to give demo institutions unique, realistic names
+# (Bengaluru uses the Census BBMP ward names instead).
+LOCALITIES = {
+    "Mumbai": ["Andheri", "Bandra", "Dadar", "Kurla", "Chembur", "Borivali", "Malad", "Goregaon", "Ghatkopar", "Colaba", "Worli", "Powai"],
+    "Delhi": ["Karol Bagh", "Dwarka", "Rohini", "Saket", "Lajpat Nagar", "Janakpuri", "Mayur Vihar", "Pitampura", "Vasant Kunj", "Shahdara", "Laxmi Nagar", "Model Town"],
+    "Chennai": ["T. Nagar", "Adyar", "Anna Nagar", "Velachery", "Mylapore", "Tambaram", "Guindy", "Porur", "Perambur", "Egmore"],
+    "Kolkata": ["Salt Lake", "Howrah", "Ballygunge", "Behala", "Dum Dum", "Park Circus", "Jadavpur", "Tollygunge", "Garia", "Shyambazar"],
+    "Hyderabad": ["Banjara Hills", "Secunderabad", "Kukatpally", "Gachibowli", "Ameerpet", "Dilsukhnagar", "Madhapur", "Begumpet", "Charminar", "LB Nagar"],
+    "Bhubaneswar": ["Saheed Nagar", "Patia", "Nayapalli", "Khandagiri", "Chandrasekharpur", "Old Town", "Rasulgarh", "Jaydev Vihar"],
+    "Puri": ["Grand Road", "Swargadwar", "Baliapanda", "Chakratirtha", "Penthakata"],
+    "Visakhapatnam": ["MVP Colony", "Gajuwaka", "Dwaraka Nagar", "Madhurawada", "Seethammadhara", "Pendurthi", "Rushikonda"],
+    "Guwahati": ["Dispur", "Paltan Bazaar", "Beltola", "Chandmari", "Maligaon", "Six Mile", "Zoo Road", "Ganeshguri"],
+    "Ahmedabad": ["Navrangpura", "Maninagar", "Satellite", "Bopal", "Vastrapur", "Naroda", "Chandkheda", "Paldi", "Ghatlodia"],
+    "Jaipur": ["Malviya Nagar", "Mansarovar", "Vaishali Nagar", "C-Scheme", "Raja Park", "Jhotwara", "Sanganer", "Tonk Road"],
+    "Kochi": ["Edappally", "Kakkanad", "Vyttila", "Fort Kochi", "Kaloor", "Palarivattom", "Thrippunithura", "Aluva"],
+    "Mysuru": ["Vijayanagar", "Kuvempunagar", "Saraswathipuram", "Jayalakshmipuram", "Hebbal", "Nazarbad", "Gokulam"],
+    "Pune": ["Kothrud", "Hadapsar", "Shivajinagar", "Aundh", "Baner", "Hinjewadi", "Wakad", "Kharadi", "Viman Nagar", "Swargate"],
+    "Lucknow": ["Hazratganj", "Gomti Nagar", "Aliganj", "Indira Nagar", "Alambagh", "Chowk", "Aminabad", "Jankipuram"],
+    "Patna": ["Boring Road", "Kankarbagh", "Rajendra Nagar", "Patliputra", "Danapur", "Bailey Road", "Ashok Rajpath"],
+    "Nagpur": ["Sitabuldi", "Dharampeth", "Sadar", "Manish Nagar", "Wardhaman Nagar", "Hingna", "Civil Lines", "Pratap Nagar"],
+}

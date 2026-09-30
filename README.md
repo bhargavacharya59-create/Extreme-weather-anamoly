@@ -24,7 +24,11 @@ WeatherPulse AI turns 3–10 day ensemble weather forecasts into local, actionab
 | **Traveller / driver app** (`/traveller`) | Bus & fleet drivers | "Risk zone ahead in N min", current vs **safer route**, spoken alert |
 | **Rescue team app** (`/rescue`) | NDRF / SDRF / fire | Pre-position orders, staging point, status flow, report constraints |
 
-Demo accounts (password **`demo123`**): `officer@demo.in`, `school@demo.in`, `hospital@demo.in`, `rescue@demo.in`, `citizen@demo.in`, `driver@demo.in` — or click a role card on the sign-in page.
+### Logins
+* **Every** school/college, hospital and rescue unit has its own account — **username = its name** (e.g. `Govt. High School, Singasandra, Bengaluru`), unique password. Bus drivers log in with their bus number; the government has one account (`GovtOfficer`).
+* **Citizens register themselves** (mobile number + password + home area) and then sign in with their mobile number.
+* All demo logins are in **[`data/demo_accounts.xlsx`](data/demo_accounts.xlsx)** (regenerate with `python -m scripts.export_accounts`). The sign-in page also shows a "Judge demo" login for each role.
+* Passwords are stored only as salted PBKDF2 hashes. Demo data only — never reuse these passwords.
 
 ## Quick start (local)
 
@@ -67,6 +71,8 @@ python -m scripts.prepare_reference_data
 * **Gemini key** → AI-written alerts, translations and a conversational Copilot. Get one at https://aistudio.google.com/apikey and put it in `backend/.env` (never in the frontend, never in Git).
 * `python -m scripts.train_models` — retrain the models (also available from Settings → Retrain).
 * `python -m scripts.generate_synthetic_data` — export the synthetic datasets to `data/synthetic/`.
+* `python -m scripts.export_accounts` — write every demo login to `data/demo_accounts.xlsx`.
+* **Map:** satellite (Esri World Imagery, no key) or streets (OpenFreeMap, no key) via the layers button. Optional `NEXT_PUBLIC_MAPTILER_KEY` in `frontend/.env.local` switches satellite to MapTiler Hybrid for production use.
 * `python -m pytest -q` (in `backend/`) — run the test suite.
 * `docker compose up --build` — run both services in containers.
 

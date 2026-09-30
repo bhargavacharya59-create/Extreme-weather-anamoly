@@ -19,9 +19,10 @@ class ApiTests(unittest.TestCase):
         from app.service import get_pipeline
         get_pipeline().run()
         cls.c = TestClient(app)
-        tok = cls.c.post("/api/v1/auth/login", json={"email": "officer@demo.in", "password": "demo123"}).json()["token"]
+        from app.accounts import GOVT_USERNAME, demo_password
+        tok = cls.c.post("/api/v1/auth/login", json={"username": GOVT_USERNAME, "password": demo_password(GOVT_USERNAME)}).json()["token"]
         cls.h = {"Authorization": f"Bearer {tok}"}
-        tok2 = cls.c.post("/api/v1/auth/login", json={"email": "citizen@demo.in", "password": "demo123"}).json()["token"]
+        tok2 = cls.c.post("/api/v1/auth/login", json={"username": "9000000001", "password": demo_password("citizen-9000000001")}).json()["token"]
         cls.hc = {"Authorization": f"Bearer {tok2}"}
 
     def test_auth_required(self):
@@ -46,6 +47,12 @@ class ApiTests(unittest.TestCase):
         r = self.c.post(f"/api/v1/alerts/{a['alert_id']}/approve", headers=self.h).json()
         self.assertEqual(r["alert"]["approval_status"], "sent")
         self.assertTrue(r["deliveries"])
+
+    def test_register_and_wrong_password(self):
+        r = self.c.post("/api/v1/auth/register", json={"name": "Test User", "phone": "9123456780", "password": "secret1", "locality_id": "C-Bengaluru"})
+        self.assertIn(r.status_code, (200, 400))  # 400 if already registered by an earlier run
+        self.assertEqual(self.c.post("/api/v1/auth/login", json={"username": "9123456780", "password": "nope"}).status_code, 401)
+        self.assertEqual(self.c.post("/api/v1/auth/login", json={"username": "9123456780", "password": "secret1"}).status_code, 200)
 
     def test_copilot_grounded(self):
         r = self.c.post("/api/v1/copilot/ask", headers=self.h, json={"question": "How many people are in the Bengaluru zone?"}).json()

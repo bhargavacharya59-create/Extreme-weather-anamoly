@@ -84,12 +84,12 @@ export default function SettingsPage() {
                 <button className="btn primary" onClick={runPipeline} disabled={busy === 'run'}><Icon name="play" size={15} />{busy === 'run' ? 'Running…' : 'Run pipeline'}</button>
               </div>
             </Card>
-            <Card title="Demo users & roles">
+            <Card title="User accounts">
               <table className="table">
-                <thead><tr><th>Email</th><th>Name</th><th>Role</th></tr></thead>
-                <tbody>{data.users.map((u) => <tr key={u.email}><td className="mono small">{u.email}</td><td className="small">{u.name} · {u.title}</td><td><span className="badge neutral">{u.role}</span></td></tr>)}</tbody>
+                <thead><tr><th>Account type</th><th>Role</th><th className="r">Accounts</th></tr></thead>
+                <tbody>{data.users.map((u) => <tr key={u.role}><td className="small">{u.label}</td><td><span className="badge neutral">{u.role}</span></td><td className="r num">{u.count}</td></tr>)}</tbody>
               </table>
-              <div className="small muted" style={{ marginTop: 8 }}>Password for all demo accounts: demo123. Replace with a government identity provider for real use.</div>
+              <div className="small muted" style={{ marginTop: 8 }}>Every institution, rescue unit and bus has its own login; citizens register themselves. Export all demo logins with <span className="mono">python -m scripts.export_accounts</span>. Passwords are stored as salted hashes.</div>
             </Card>
           </div>
         </>

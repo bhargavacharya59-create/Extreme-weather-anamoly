@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import MapView, { RiskLegend } from '@/components/map/MapView';
+import MapView from '@/components/map/MapView';
 import RoleHeader from '@/components/RoleHeader';
 import { Empty, ErrorBox, Modal, SeverityBadge, Skeleton, toast } from '@/components/ui';
 import Icon from '@/components/ui/Icon';
@@ -58,8 +58,7 @@ export default function RescueApp() {
                 </div>
               </section>
 
-              <MapView zones={zoneFc} height={230} fit="data" fitKey={o.order_id} interactive={false} markers={[{ lon: o.stage_at.lon, lat: o.stage_at.lat, label: 'Staging point', tone: 'stage' }]}>
-                <div className="map-overlay" style={{ left: 8, bottom: 8 }}><RiskLegend collapsible={false} title="Risk rings" /></div>
+              <MapView zones={zoneFc} height={230} fit="data" fitKey={o.order_id} interactive={false} title="Assigned zone" markers={[{ lon: o.stage_at.lon, lat: o.stage_at.lat, label: 'Staging point', tone: 'stage' }]}>
               </MapView>
 
               <section className="m-card col gap-8">

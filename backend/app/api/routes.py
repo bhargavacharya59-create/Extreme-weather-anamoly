@@ -44,16 +44,62 @@ OFFICIAL = require("official")
 
 
 class LoginBody(BaseModel):
-    email: str
+    username: str | None = None
+    email: str | None = None        # backwards compatible field name
     password: str
 
 
 @router.post("/auth/login")
 def login(body: LoginBody):
-    res = auth.login(body.email, body.password)
+    res = auth.login(body.username or body.email or "", body.password)
     if not res:
-        raise HTTPException(401, "Wrong email or password")
+        raise HTTPException(401, "Wrong username or password")
     return res
+
+
+class RegisterBody(BaseModel):
+    name: str
+    phone: str
+    password: str
+    email: str | None = None
+    locality_id: str | None = None   # from /auth/localities
+    lat: float | None = None         # or the phone's GPS position
+    lon: float | None = None
+
+
+def _localities():
+    from app.data.cities import CITIES
+    pop = get_population()
+    out = []
+    for w in pop.wards:
+        ring = np.asarray(w["polys"][0])
+        out.append({"id": f"W{w['ward_no']}", "label": f"{w['ward_name'].replace(' Ward', '')}, Bengaluru",
+                    "group": "Bengaluru (BBMP wards)", "lat": round(float(ring[:, 1].mean()), 5), "lon": round(float(ring[:, 0].mean()), 5)})
+    for name, state, lat, lon, *_ in CITIES:
+        out.append({"id": f"C-{name}", "label": f"{name}, {state}", "group": "Cities", "lat": lat, "lon": lon})
+    return sorted(out, key=lambda x: (x["group"] != "Bengaluru (BBMP wards)", x["label"]))
+
+
+@router.get("/auth/localities")
+def localities():
+    return _localities()
+
+
+@router.post("/auth/register")
+def register(body: RegisterBody):
+    from app.accounts import get_accounts
+    if body.lat is not None and body.lon is not None:
+        lat, lon, label = body.lat, body.lon, "My location"
+    else:
+        loc = next((l for l in _localities() if l["id"] == body.locality_id), None)
+        if not loc:
+            raise HTTPException(400, "Choose your area")
+        lat, lon, label = loc["lat"], loc["lon"], loc["label"]
+    try:
+        u = get_accounts().register_citizen(body.name, body.phone, body.password, body.email, lat, lon, label)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return auth.session_for(u)
 
 
 @router.get("/auth/me")
@@ -61,9 +107,42 @@ def me(user: dict = Depends(current_user)):
     return user
 
 
-@router.get("/auth/demo-accounts")
-def demo_accounts():
-    return auth.demo_accounts()
+@router.get("/auth/directory")
+def directory(role: str, q: str = "", limit: int = 30):
+    """Names for the sign-in autocomplete (institutions, rescue units, buses)."""
+    from app.accounts import get_accounts
+    if role not in ("institution", "rescue", "traveller"):
+        raise HTTPException(400, "Unknown role")
+    return [{"username": r["username"], "title": r["title"]} for r in get_accounts().directory(role, q, min(limit, 100))]
+
+
+@router.get("/auth/quick-access")
+def quick_access():
+    """One ready-to-use demo login per role (for judges); full list via scripts/export_accounts.py."""
+    from app.accounts import GOVT_USERNAME, demo_password, get_accounts
+    p = get_pipeline()
+    acc = get_accounts()
+    out = [{"role": "official", "label": "Government official", "username": GOVT_USERNAME, "password": demo_password(GOVT_USERNAME)}]
+    if p.state:
+        for kind, role, label in (("school", "institution", "School / college"), ("hospital", "institution", "Hospital")):
+            best = None
+            for e in p.events():
+                for a in e["peak"]["impact"].get("assets", []):
+                    if a["kind"] == kind and (best is None or ({"high": 0, "moderate": 1, "low": 2}[a["ring"]], a["distance_km"]) < best[0]):
+                        best = (({"high": 0, "moderate": 1, "low": 2}[a["ring"]], a["distance_km"]), a)
+            if best:
+                out.append({"role": role, "label": label, "username": best[1]["name"], "password": demo_password(best[1]["name"])})
+        orders = sorted(p.store.orders(), key=lambda o: "Bengaluru" not in o["place"])
+        if orders:
+            unit = p.asset_by_id.get(orders[0]["unit_id"])
+            if unit:
+                out.append({"role": "rescue", "label": "Rescue team", "username": unit["name"], "password": demo_password(unit["name"])})
+        buses = [(e, v) for e in p.events() for v in e.get("vehicles", {}).get("toward", []) if v["kind"] == "bus"]
+        buses.sort(key=lambda c: (c[0]["location"]["nearest_city"] != "Bengaluru", c[1]["status"] != "approaching"))
+        if buses and acc.find_login(buses[0][1]["id"]):
+            out.append({"role": "traveller", "label": "Bus driver", "username": buses[0][1]["id"], "password": demo_password(buses[0][1]["id"])})
+    out.append({"role": "citizen", "label": "Citizen (sample)", "username": "9000000001", "password": demo_password("citizen-9000000001")})
+    return out
 
 
 @router.get("/health")
@@ -351,8 +430,17 @@ def traveller_status(vehicle_id: str | None = None, user: dict = Depends(current
     for e in p.events():
         for v in e.get("vehicles", {}).get("toward", []):
             cand.append((e, v))
+    if user["role"] == "traveller" and user.get("vehicle_id"):
+        vehicle_id = user["vehicle_id"]
+        if not any(c[1]["id"] == vehicle_id for c in cand):   # this bus is not heading into any zone
+            v = next((x for e in p.events() for x in e.get("vehicles", {}).get("all", []) if x["id"] == vehicle_id), None)
+            near = None
+            if v:
+                e = min(p.events(), key=lambda e: float(haversine_km(v["lat"], v["lon"], e["peak"]["lat"], e["peak"]["lon"])))
+                near = {"event": _lite(e), "distance_km": round(float(haversine_km(v["lat"], v["lon"], e["peak"]["lat"], e["peak"]["lon"])), 1)}
+            return {"clear": True, "vehicle": v, "nearest": near}
     if not cand:
-        return {"alert": None}
+        return {"clear": True, "vehicle": None, "nearest": None}
     if vehicle_id:
         match = [c for c in cand if c[1]["id"] == vehicle_id]
         if not match:
@@ -404,6 +492,8 @@ def institutions(kind: str | None = None, at_risk: bool = True, user: dict = Dep
 @router.get("/institutions/me")
 def my_institution(user: dict = Depends(require("institution", "official"))):
     p = _p()
+    if user.get("asset_id"):
+        return {"asset_id": user["asset_id"]}
     kind = user.get("asset_kind", "school")
     order = {"high": 0, "moderate": 1, "low": 2}
     best = None
@@ -419,6 +509,11 @@ def my_institution(user: dict = Depends(require("institution", "official"))):
     return {"asset_id": best[1]["id"]}
 
 
+def _own(user, asset_id):
+    if user["role"] == "institution" and user.get("asset_id") and user["asset_id"] != asset_id:
+        raise HTTPException(403, "You can only see your own institution")
+
+
 CHECKLISTS = {
     "school": ["Share the alert with all staff", "Confirm parent contact list is current", "Decide dismissal / closure time",
                "Clear drains and move records off the ground floor", "Check school bus routes avoid risk zones",
@@ -431,6 +526,7 @@ CHECKLISTS = {
 
 @router.get("/institutions/{asset_id}/status")
 def institution_status(asset_id: str, user: dict = Depends(require("institution", "official"))):
+    _own(user, asset_id)
     p = _p()
     a = p.asset_by_id.get(asset_id)
     if not a:
@@ -467,6 +563,7 @@ class AckBody(BaseModel):
 
 @router.post("/institutions/{asset_id}/acknowledge")
 def acknowledge(asset_id: str, body: AckBody, user: dict = Depends(require("institution", "official"))):
+    _own(user, asset_id)
     p = _p()
     p.store.acknowledge(body.alert_id or "", asset_id, user["id"], body.note)
     p.store.audit(user["id"], "acknowledge", {"asset_id": asset_id, "alert_id": body.alert_id})
@@ -480,6 +577,7 @@ class CheckBody(BaseModel):
 
 @router.post("/institutions/{asset_id}/checklist")
 def checklist(asset_id: str, body: CheckBody, user: dict = Depends(require("institution", "official"))):
+    _own(user, asset_id)
     _p().store.set_checklist(asset_id, body.item, body.done)
     return {"ok": True}
 
@@ -488,6 +586,9 @@ def checklist(asset_id: str, body: CheckBody, user: dict = Depends(require("inst
 @router.get("/citizen/status")
 def citizen_status(lat: float | None = None, lon: float | None = None, user: dict = Depends(current_user)):
     p = _p()
+    home = None
+    if (lat is None or lon is None) and user.get("home_lat") is not None:   # registered citizen: their home area
+        lat, lon, home = user["home_lat"], user["home_lon"], user.get("home_label")
     if lat is None or lon is None:  # demo: a point in the high ring of the most-populated event
         e = max(p.events(), key=lambda e: (e["location"]["nearest_city"] == "Bengaluru" and e["location"]["city_distance_km"] < 30,
                                            e["peak"]["impact"]["population"]["total"]))
@@ -509,7 +610,7 @@ def citizen_status(lat: float | None = None, lon: float | None = None, user: dic
         ward = {"ward_no": w["ward_no"], "ward_name": w["ward_name"]}
     shelters = sorted((a for a in p.assets if a["kind"] == "school"),
                       key=lambda a: float(haversine_km(lat, lon, a["lat"], a["lon"])))
-    res = {"lat": lat, "lon": lon, "ward": ward, "weather": wx, "risk": None,
+    res = {"lat": lat, "lon": lon, "home_label": home, "ward": ward, "weather": wx, "risk": None,
            "helplines": [{"name": "Disaster helpline", "number": "1070"}, {"name": "Emergency", "number": "112"}]}
     if hits:
         e, q, ring = min(hits, key=lambda h: (order[h[2]], h[1]["lead_h"]))
@@ -530,6 +631,8 @@ def citizen_status(lat: float | None = None, lon: float | None = None, user: dic
 # ------------------------------------------------------------------ rescue
 @router.get("/rescue/orders")
 def rescue_orders(unit_id: str | None = None, user: dict = Depends(require("rescue", "official"))):
+    if user["role"] == "rescue":
+        unit_id = user.get("asset_id")
     orders = _p().store.orders(unit_id)
     return sorted(orders, key=lambda o: (o["status"] != "issued", o["window"]["start"]))
 
@@ -543,6 +646,8 @@ class OrderStatus(BaseModel):
 def order_status(order_id: str, body: OrderStatus, user: dict = Depends(require("rescue", "official"))):
     if body.status not in ("issued", "accepted", "en_route", "on_site", "constraint", "completed"):
         raise HTTPException(400, "Invalid status")
+    if user["role"] == "rescue" and not any(o["order_id"] == order_id for o in _p().store.orders(user.get("asset_id"))):
+        raise HTTPException(403, "This order belongs to another unit")
     o = _p().store.set_order_status(order_id, body.status, body.note)
     if not o:
         raise HTTPException(404, "Unknown order")
@@ -714,8 +819,16 @@ def settings_status(user: dict = Depends(OFFICIAL)):
                   "metrics": {k: v for k, v in p.models.metrics.items() if k != "type_report"}},
         "integrations": {"gemini": gemini.enabled(), "gemini_model": settings.gemini_model if gemini.enabled() else None,
                          "sms": settings.sms_provider, "email": settings.email_provider},
-        "users": auth.demo_accounts(),
+        "users": _user_summary(),
     }
+
+
+def _user_summary():
+    from app.accounts import get_accounts
+    a = get_accounts()
+    return [{"role": r, "label": l, "count": a.count(role=r)} for r, l in
+            (("official", "Government officials"), ("institution", "Schools, colleges & hospitals"), ("rescue", "Rescue units"),
+             ("traveller", "Bus drivers"), ("citizen", "Citizens (registered + samples)"))]
 
 
 # ------------------------------------------------------------------ pipeline & learning

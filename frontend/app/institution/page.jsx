@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import MapView, { LEGEND, RiskLegend } from '@/components/map/MapView';
+import MapView from '@/components/map/MapView';
 import { Bars } from '@/components/charts';
 import RoleHeader from '@/components/RoleHeader';
 import { Card, DemoBanner, Empty, ErrorBox, Kpi, RingBadge, Skeleton, toast } from '@/components/ui';
@@ -102,8 +102,8 @@ export default function InstitutionPortal() {
 
             <div className="grid" style={{ gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)' }}>
               <Card title="Your site and the risk zone" footer="Rings move with the storm; this is the forecast at the time of highest risk for your site.">
-                <MapView zones={zoneFc} height={380} fit="data" fitKey={a.id} markers={[{ lon: a.lon, lat: a.lat, label: isHosp ? 'Your hospital' : 'Your school', tone: 'shelter' }]}>
-                  <div className="map-overlay" style={{ left: 10, bottom: 10 }}><RiskLegend collapsible={false} /></div>
+                <MapView zones={zoneFc} height={380} fit="data" fitKey={a.id} markers={[{ lon: a.lon, lat: a.lat, label: isHosp ? 'Your hospital' : 'Your school', tone: 'shelter' }]}
+                  title={`${a.locality || a.city} · Risk Zone`} legend compact>
                 </MapView>
               </Card>
               <div className="col gap-16">

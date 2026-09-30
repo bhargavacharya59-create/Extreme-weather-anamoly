@@ -40,8 +40,8 @@ export default function InstitutionsPage() {
         </Card>
         <MapView zones={zones.data} assets={assetsFc} height={560} fit="data" fitKey={`inst-${sel?.id}`}
           focus={sel ? { lon: sel.lon, lat: sel.lat, zoom: 12.5 } : list[0] ? { lon: list[0].lon, lat: list[0].lat, zoom: 10 } : undefined}
-          markers={sel ? [{ lon: sel.lon, lat: sel.lat, label: sel.name, tone: 'shelter' }] : []} show={{ tracks: false }}>
-          <div className="map-overlay" style={{ left: 12, bottom: 12 }}><RiskLegend extra={[LEGEND.school, LEGEND.hospital, LEGEND.rescue]} /></div>
+          markers={sel ? [{ lon: sel.lon, lat: sel.lat, label: sel.name, tone: 'shelter' }] : []} show={{ tracks: false }}
+          title={sel ? `${sel.city} · Institutions` : 'Institutions at risk'} legend={[LEGEND.school, LEGEND.hospital, LEGEND.rescue]} compact>
         </MapView>
       </div>
     </div>

@@ -130,6 +130,11 @@ class Pipeline:
             self.state = {"run": run, "events": events, "bundle": bundle, "clim": clim, "pre": pre, "grid": grid}
             self._draft_alerts(run, events)
             self._rescue_orders(events)
+            try:
+                from app.accounts import get_accounts
+                get_accounts().seed_drivers(events)
+            except Exception as e:  # accounts are optional for the pipeline itself
+                log.warning("driver account seeding failed: %s", e)
             run["runtime_s"] = round(time.time() - t0, 2)
             self.store.save_run(run, events)
             self.status = "ready"
@@ -338,8 +343,8 @@ class Pipeline:
     def _rescue_orders(self, events):
         existing = {o["order_id"] for o in self.store.orders()}
         for ev in events:
-            if ev["severity"] != "High":
-                continue
+            if SEV_RANK[ev["severity"]] < 1 or ev["peak"]["impact"]["population"]["total"] <= 0:
+                continue   # pre-position for High and Moderate events that affect people
             teams = [a for a in ev["peak"]["impact"].get("assets", []) if a["kind"] == "rescue_team"]
             if not teams:
                 z = ev["peak"]["zone"]

@@ -137,11 +137,9 @@ export default function AnomalyDetail() {
       <div className="row-top" style={{ gap: 16 }}>
         <div className="grow col gap-12">
           <MapView zones={ev} tracks={tr} assets={assets.data} vehicles={vehicles.data} wards={wards.data} highlightWards={hlWards}
-            height={470} fit="data" fitKey={`${id}-${!!zones.data}`} focus={{ lon: pt.lon, lat: pt.lat, zoom: 10.3 }}>
-            <div className="map-overlay" style={{ left: 12, top: 12 }}><div className="maptag">{pt.valid_local} · {e.place}</div></div>
-            <div className="map-overlay" style={{ left: 12, bottom: 12 }}>
-              <RiskLegend extra={[LEGEND.track, LEGEND.cone, LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn, { label: 'Census ward in zone', color: '#3987e5' }]} />
-            </div>
+            height={520} fit="data" fitKey={`${id}-${!!zones.data}`} focus={{ lon: pt.lon, lat: pt.lat, zoom: 10.6 }} compact
+            title={`${e.place.split(' (')[0].split(',')[0]} · Risk Zone Analysis`}
+            legend={[LEGEND.school, LEGEND.hospital, LEGEND.rescue, LEGEND.vehicleIn, LEGEND.ward, LEGEND.track, LEGEND.cone]}>
           </MapView>
           <div className="card card-pad col gap-8">
             <div className="row between wrap">
