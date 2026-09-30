@@ -318,24 +318,29 @@ def _routes_for(v, zone):
         la, lo = destination(v["lat"], v["lon"], v["heading_deg"], speed * m / 60)
         direct.append([round(lo, 5), round(la, 5)])
     clat, clon = zone["center"][1], zone["center"][0]
-    r = zone["radii_km"]["low"] * 1.6 + 2
+    r_low = zone["radii_km"]["low"] * 1.5          # outer ring incl. its along-track stretch
+    d_in = float(haversine_km(v["lat"], v["lon"], clat, clon))
+    r = max(min(r_low + 3, d_in * 0.97), r_low * 1.1)
     end_lat, end_lon = direct[-1][1], direct[-1][0]
+    if float(haversine_km(end_lat, end_lon, clat, clon)) < r:  # journey ends inside: continue past the zone
+        end_lat, end_lon = destination(clat, clon, float(bearing_deg(v["lat"], v["lon"], clat, clon)), r * 1.4)
     b_in = float(bearing_deg(clat, clon, v["lat"], v["lon"]))
     b_out = float(bearing_deg(clat, clon, end_lat, end_lon))
     side = 1 if ((v["detour_heading_deg"] - v["heading_deg"] + 360) % 360) < 180 else -1
     sweep = (b_out - b_in) % 360 if side > 0 else -((b_in - b_out) % 360)
+    if abs(sweep) > 250:                             # take the shorter way round
+        sweep = sweep - 360 if sweep > 0 else sweep + 360
     safer = [[v["lon"], v["lat"]]]
-    d_in = float(haversine_km(v["lat"], v["lon"], clat, clon))
-    if d_in > r:
-        steps = 10
-        for k in range(steps + 1):
-            la, lo = destination(clat, clon, (b_in + sweep * k / steps) % 360, r)
-            safer.append([round(lo, 5), round(la, 5)])
-    safer.append([end_lon, end_lat])
+    steps = 14
+    for k in range(steps + 1):
+        la, lo = destination(clat, clon, (b_in + sweep * k / steps) % 360, r)
+        safer.append([round(lo, 5), round(la, 5)])
+    safer.append([round(end_lon, 5), round(end_lat, 5)])
+    direct[-1] = [round(end_lon, 5), round(end_lat, 5)]
 
     def length(line):
         return sum(float(haversine_km(a[1], a[0], b[1], b[0])) for a, b in zip(line[:-1], line[1:]))
-    extra = max(0, round((length(safer) - length(direct)) / max(speed, 5) * 60))
+    extra = max(1, round((length(safer) - length(direct)) / max(speed, 5) * 60))
     return direct, safer, extra
 
 
@@ -354,8 +359,8 @@ def traveller_status(vehicle_id: str | None = None, user: dict = Depends(current
             raise HTTPException(404, "Vehicle is not heading into any risk zone")
         e, v = match[0]
     else:  # demo: a bus heading into the most populated high-impact zone
-        cand.sort(key=lambda c: (c[1]["status"] != "approaching", c[1]["kind"] != "bus",
-                                 -c[0]["peak"]["impact"]["population"]["total"], c[1]["eta_min"]))
+        cand.sort(key=lambda c: (c[0]["location"]["nearest_city"] != "Bengaluru", c[1]["status"] != "approaching",
+                                 c[1]["kind"] != "bus", -c[0]["peak"]["impact"]["population"]["total"], -c[1]["eta_min"]))
         e, v = cand[0]
     zone = e["peak"]["zone"]
     direct, safer, extra = _routes_for(v, zone)
@@ -484,7 +489,8 @@ def checklist(asset_id: str, body: CheckBody, user: dict = Depends(require("inst
 def citizen_status(lat: float | None = None, lon: float | None = None, user: dict = Depends(current_user)):
     p = _p()
     if lat is None or lon is None:  # demo: a point in the high ring of the most-populated event
-        e = max(p.events(), key=lambda e: e["peak"]["impact"]["population"]["total"])
+        e = max(p.events(), key=lambda e: (e["location"]["nearest_city"] == "Bengaluru" and e["location"]["city_distance_km"] < 30,
+                                           e["peak"]["impact"]["population"]["total"]))
         la, lo = destination(e["peak"]["lat"], e["peak"]["lon"], 200, 1.6)
         lat, lon = round(la, 5), round(lo, 5)
     order = {"high": 0, "moderate": 1, "low": 2}

@@ -52,6 +52,22 @@ STATE_ALIASES = {
 }
 
 
+# Boundary (GADM, ~2001 names) -> Census 2011 district names, for renamed/split districts.
+DISTRICT_ALIASES = {
+    "bangalore urban": ["bangalore"], "greater bombay": ["mumbai", "mumbai suburban"],
+    "cuddapah": ["y s r"], "nellore": ["sri potti sriramulu nellore"], "north cachar hills": ["dima hasao"],
+    "bhabua": ["kaimur"], "dantewada": ["dakshin bastar dantewada"], "kanker": ["uttar bastar kanker"],
+    "kawardha": ["kabeerdham"], "dahod": ["dohad"], "east nimar": ["khandwa"], "west nimar": ["khargone"],
+    "east imphal": ["imphal east"], "west imphal": ["imphal west"], "sonepur": ["subarnapur"],
+    "nawan shehar": ["shahid bhagat singh nagar"], "north sikkim": ["north"], "south sikkim": ["south"],
+    "west sikkim": ["west"], "east sikkim": ["east"], "hathras": ["mahamaya nagar"], "lakhimpur kheri": ["kheri"],
+    "east midnapore": ["purba medinipur"], "west midnapore": ["paschim medinipur"],
+    "north parganas": ["north twenty four parganas"], "south parganas": ["south twenty four parganas"],
+    "ladakh": ["leh"], "andaman islands": ["north and middle andaman", "south andaman"], "nicobar islands": ["nicobars"],
+    "kavaratti": ["lakshadweep"],
+}
+
+
 def _norm(s: str) -> str:
     s = str(s).lower().replace("&", "and")
     s = re.sub(r"\(.*?\)", "", s)
@@ -172,19 +188,36 @@ def build_density(census: pd.DataFrame, districts_geojson: Path) -> pd.DataFrame
     P["population_2011"] = np.nan
     P["census_match"] = ""
     used = set()
+
+    def take(i, rows):
+        P.at[i, "population_2011"] = float(rows.population_2011.sum())
+        P.at[i, "census_match"] = "; ".join(f"{r.district} ({r.district_code})" for r in rows.itertuples())
+        used.update(int(c) for c in rows.district_code)
+
+    # pass 1: explicit aliases and exact names (never fuzzy first: "Bangalore Urban" != "Bangalore Rural")
+    pending = []
     for i, row in P.iterrows():
         cands = census[census["state_n"] == row.state_n]
         if cands.empty:
-            # state renamed (e.g. Telangana carved from AP in 2014 - not an issue for 2011)
             best = difflib.get_close_matches(row.state_n, census["state_n"].unique(), n=1, cutoff=0.7)
             cands = census[census["state_n"] == best[0]] if best else cands
-        names = cands["district_n"].tolist()
-        m = difflib.get_close_matches(row.district_n, names, n=1, cutoff=0.72)
+        names = DISTRICT_ALIASES.get(row.district_n)
+        if names:
+            rows = cands[cands["district_n"].isin(names)]
+            if len(rows):
+                take(i, rows)
+                continue
+        rows = cands[cands["district_n"] == row.district_n]
+        if len(rows) == 1:
+            take(i, rows)
+            continue
+        pending.append((i, row, cands))
+    # pass 2: fuzzy match against census districts not used yet
+    for i, row, cands in pending:
+        free = cands[~cands["district_code"].isin(used)]
+        m = difflib.get_close_matches(row.district_n, free["district_n"].tolist(), n=1, cutoff=0.75)
         if m:
-            c = cands[cands["district_n"] == m[0]].iloc[0]
-            P.at[i, "population_2011"] = c.population_2011
-            P.at[i, "census_match"] = f"{c.district} ({c.district_code})"
-            used.add(int(c.district_code))
+            take(i, free[free["district_n"] == m[0]].iloc[:1])
 
     # spread population of census districts that have no polygon (districts created
     # after the boundary set was drawn) over their state's unmatched polygons (or all).

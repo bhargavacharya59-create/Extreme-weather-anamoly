@@ -291,6 +291,8 @@ class Pipeline:
                     continue
                 if role == "traveller" and not ev["peak"]["impact"]["counts"]["vehicles_toward"]:
                     continue
+                if role == "citizen" and ev["peak"]["impact"]["population"]["total"] <= 0:
+                    continue   # over open sea: nobody to warn
                 self.draft_alert(ev, role)
 
     def recipients_for(self, alert: dict) -> list[dict]:
@@ -355,7 +357,7 @@ class Pipeline:
                     "status": "issued", "severity": ev["severity"], "type": ev["type"], "place": ev["place"],
                     "stage_at": {"lat": z["center"][1], "lon": z["center"][0]},
                     "stage_by_local": _fmt_local(stage_time), "window": ev["window"],
-                    "distance_km": round(d, 1), "drive_min": int(round(d * 1.35 / 25 * 60)),
+                    "distance_km": round(d, 1), "drive_min": int(round(d * 1.35 / 35 * 60)),
                     "people_high": ev["peak"]["impact"]["population"]["high"],
                     "priorities": [f"{a['name']} ({a['ring']} risk)" for a in ev["peak"]["impact"].get("assets", [])
                                    if a["kind"] in ("school", "hospital")][:4],
